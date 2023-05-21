@@ -12,7 +12,7 @@ function Login() {
   return (
     <>
       <div className="w-full h-full flex items-center justify-center">
-        <div className="sm:border border-[#BDBDBD] w-[400px] h-[480px] my-10 rounded-md">
+        <div className="px-8 border border-[#BDBDBD] w-[400px] h-[480px] my-10 rounded-md">
           <form className="m-auto" onSubmit={handleSubmit}>
             <div className="w-[344px] mx-auto my-10">
               <h3 className="my-4 font-bold text-lg text-dark-gray">Login</h3>
@@ -47,15 +47,15 @@ function Login() {
           <p className=" mt-8 text-center font-normal text-[14px] text-[#828282]">
             or continue with these social profile
           </p>
-          <div className="mt-4 flex items-center justify-center space-x-4">
-            <img src="/Google.svg" className="w-10 h-10" />
-            <img src="/Facebook.svg" className="w-10 h-10" />
-            <img src="/Twitter.svg" className="w-10 h-10" />
-            <img src="/Github.svg" className="w-10 h-10" />
+          <div className="mt-4 flex items-center justify-center space-x-4 ">
+            <img src="/Google.svg" className="w-10 h-10 cursor-pointer" />
+            <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
+            <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
+            <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />
           </div>
           <p className=" mt-8 text-center font-normal text-[14px] text-[#828282]">
             Don't have an account yet?{" "}
-            <span className="text-dark-blue">
+            <span className="text-dark-blue hover:underline">
               <Link to="/register">Register</Link>
             </span>
           </p>
