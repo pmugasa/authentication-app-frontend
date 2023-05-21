@@ -1,11 +1,22 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Edit from "./pages/Edit";
+import Profile from "./pages/Profile";
+
 function App() {
   return (
-    <>
-      <div className="bg-primary max-w-screen max-h-screen mx-4">
-        <Navbar />
-      </div>
-    </>
+    <Router>
+      <Navbar />
+
+      <Routes>
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/edit" element={<Edit />} />
+      </Routes>
+    </Router>
   );
 }
 

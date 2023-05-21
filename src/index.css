@@ -7,3 +7,11 @@
     font-family: "Noto Sans", sans-serif;
   }
 }
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #fafafb;
+  padding-left: 10%;
+  padding-right: 10%;
+}
