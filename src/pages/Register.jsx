@@ -1,20 +1,40 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../services/firebase.config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 
 function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
 
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    console.log("Submitted data", email, password);
+  //input changes
+  function handleChange(e) {
+    setFormData((prevCred) => ({
+      ...prevCred,
+      [e.target.name]: e.target.value,
+    }));
   }
+
+  // registering user
+  function registerUser(e) {
+    e.preventDefault();
+    createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   return (
     <>
       <div className="w-full h-full flex items-center justify-center">
         <div className="border border-[#BDBDBD] w-[400px] h-[500px] my-10 px-8 rounded-md">
-          <form className="m-auto" onSubmit={handleSubmit}>
+          <form className="m-auto" onSubmit={registerUser}>
             <div className="w-[344px] mx-auto my-8">
               <h3 className="my-2 font-bold text-lg text-dark-gray">
                 Join thousands of learners from around the world
@@ -27,8 +47,8 @@ function Register() {
                 <img src="mail.svg" className="h-5 w-5" />
                 <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
+                  onChange={handleChange}
                   placeholder="Email"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
@@ -37,8 +57,8 @@ function Register() {
                 <img src="lock.svg" className="h-5 w-5" />
                 <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  onChange={handleChange}
                   placeholder="Password"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
@@ -63,7 +83,7 @@ function Register() {
           <p className=" mt-6 text-center font-normal text-[14px] text-[#828282]">
             Already a member?
             <span className="text-dark-blue hover:underline ml-2">
-              <Link to="/">Login</Link>
+              <Link to="/login">Login</Link>
             </span>
           </p>
         </div>

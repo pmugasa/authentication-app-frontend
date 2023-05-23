@@ -1,5 +1,11 @@
+import Login from "./Login";
 import { Link } from "react-router-dom";
-function Profile() {
+
+function Profile({ currentUser }) {
+  if (!currentUser) {
+    return <Login />;
+  }
+
   return (
     <>
       <div className="">
@@ -31,14 +37,14 @@ function Profile() {
                   <td className="text-[#BDBDBD] text-sm px-2 py-4 ">PHOTO</td>
                   <td className="py-4 px-2">
                     <img
-                      src="https://images.unsplash.com/photo-1638803040283-7a5ffd48dad5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjB8fGNhcnRvb24lMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
+                      src={currentUser.photoURL}
                       className="w-10 h-10 rounded-md "
                     />
                   </td>
                 </tr>
                 <tr className="border-b border-[#E0E0E0] ">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">NAME</td>
-                  <td className="py-4 px-2 text-sm">Xante Neal</td>
+                  <td className="py-4 px-2 text-sm">{currentUser.name}</td>
                 </tr>
                 <tr className="border-b border-[#E0E0E0]">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">BIO</td>
@@ -49,11 +55,11 @@ function Profile() {
                 </tr>
                 <tr className="border-b border-[#E0E0E0]">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">PHONE</td>
-                  <td className="py-4 px-2 text-sm">908249274292</td>
+                  <td className="py-4 px-2 text-sm">{currentUser.phone}</td>
                 </tr>
                 <tr className="border-b border-[#E0E0E0]">
                   <td className="text-[#BDBDBD] text-sm py-2 px-2">EMAIL</td>
-                  <td className="py-4 px-2 text-sm">xanthe.neal@gmail.com</td>
+                  <td className="py-4 px-2 text-sm">{currentUser.email}</td>
                 </tr>
                 <tr className="">
                   <td className="text-[#BDBDBD] text-sm py-2 px-2">PASSWORD</td>

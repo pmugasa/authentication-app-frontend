@@ -1,18 +1,19 @@
-import { useState } from "react";
+import Login from "./Login";
 
-function Edit() {
-  const [user, setUser] = useState({
-    photo: "",
-    name: "",
-    bio: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-  function handleChange(e) {
-    setUser((prevUser) => ({ ...prevUser, [e.target.name]: e.target.value }));
+function Edit({ currentUser, setCurrentUser }) {
+  if (!currentUser) {
+    return <Login />;
   }
 
+  //input change
+  function handleChange(e) {
+    setCurrentUser((prevUser) => ({
+      ...prevUser,
+      [e.target.name]: e.target.value,
+    }));
+  }
+
+  //update user details
   function handleSubmit(e) {
     e.preventDefault();
     console.log(user);
@@ -38,7 +39,7 @@ function Edit() {
               <div className="">
                 <label htmlFor="photo" className="flex items-center space-x-4">
                   <img
-                    src="https://images.unsplash.com/photo-1638803040283-7a5ffd48dad5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjB8fGNhcnRvb24lMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
+                    src={currentUser.photoURL}
                     className="h-14 w-14 rounded-md relative hover:cursor-pointer"
                   />
                   <img
@@ -66,7 +67,6 @@ function Edit() {
                   type="text"
                   id="name"
                   name="name"
-                  value={user.name}
                   onChange={handleChange}
                   placeholder="Enter your name..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD]"
@@ -79,7 +79,6 @@ function Edit() {
                 <textarea
                   id="bio"
                   name="bio"
-                  value={user.bio}
                   onChange={handleChange}
                   placeholder="Enter your bio..."
                   className="block text-xs text-[#BDBDBD] resize-none box-border h-16 w-[344px] px-4 py-2 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD]"
@@ -93,7 +92,6 @@ function Edit() {
                   type="tel"
                   id="phone"
                   name="phone"
-                  value={user.phone}
                   onChange={handleChange}
                   placeholder="Enter your phone..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD] "
@@ -107,7 +105,6 @@ function Edit() {
                   type="email"
                   id="email"
                   name="email"
-                  value={user.email}
                   onChange={handleChange}
                   placeholder="Enter your email..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD] "
@@ -121,7 +118,6 @@ function Edit() {
                   type="password"
                   id="password"
                   name="password"
-                  value={user.email}
                   onChange={handleChange}
                   placeholder="Enter your new password..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD] "

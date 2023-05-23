@@ -1,27 +1,48 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../services/firebase.config";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  function handleChange(e) {
+    setFormData((prevCred) => ({
+      ...prevCred,
+      [e.target.name]: e.target.value,
+    }));
+  }
+
+  //login user
+  function handleLogin(e) {
     e.preventDefault();
 
-    console.log("Submitted data", email, password);
+    signInWithEmailAndPassword(auth, formData.email, formData.password)
+      .then((userCredentials) => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
+
   return (
     <>
       <div className="w-full h-full flex items-center justify-center">
         <div className="px-8 border border-[#BDBDBD] w-[400px] h-[480px] my-10 rounded-md">
-          <form className="m-auto" onSubmit={handleSubmit}>
+          <form className="m-auto" onSubmit={handleLogin}>
             <div className="w-[344px] mx-auto my-10">
               <h3 className="my-4 font-bold text-lg text-dark-gray">Login</h3>
               <div className="flex items-center  h-10  p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
                 <img src="mail.svg" className="h-5 w-5" />
                 <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
+                  onChange={handleChange}
                   placeholder="Email"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
@@ -30,8 +51,8 @@ function Login() {
                 <img src="lock.svg" className="h-5 w-5" />
                 <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  onChange={handleChange}
                   placeholder="Password"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
