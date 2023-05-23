@@ -5,7 +5,7 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   return (
     <>
-      <nav className="w-full py-4 flex items-center justify-start relative">
+      <nav className="w-full py-4 px-2 flex items-center justify-start relative">
         <Link to="/">
           <img src="/devchallenges.svg" />
         </Link>

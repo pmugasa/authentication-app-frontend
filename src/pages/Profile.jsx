@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 function Profile() {
   return (
     <>
-      <div className="z-10">
+      <div className="">
         <div className="text-center p-2">
           <h1 className="font-semibold text-black text-lg">Personal Info</h1>
           <p className="font-light text-sm text-black">
