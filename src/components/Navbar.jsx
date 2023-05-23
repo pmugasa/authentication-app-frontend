@@ -9,26 +9,28 @@ function Navbar({ currentUser }) {
         <Link to="/">
           <img src="/devchallenges.svg" />
         </Link>
-        <div className="ml-auto flex items-center space-x-2">
-          <img
-            onClick={() => setShowDropdown(!showDropdown)}
-            src={currentUser.photoURL}
-            className="w-8 h-8 rounded-md hover:cursor-pointer"
-          />
-          <div
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="hidden sm:flex items-center hover:cursor-pointer "
-          >
-            <p className="text-dark-gray text-xs font-bold">
-              {currentUser.displayName}
-            </p>
-            {showDropdown ? (
-              <img src="/arrow_drop_up.svg" className="h-6 w-8" />
-            ) : (
-              <img src="/arrow_drop_down.svg" className="h-6 w-8" />
-            )}
+        {currentUser && (
+          <div className="ml-auto flex items-center space-x-2">
+            <img
+              onClick={() => setShowDropdown(!showDropdown)}
+              src={currentUser.photoURL}
+              className="w-8 h-8 rounded-md hover:cursor-pointer"
+            />
+            <div
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="hidden sm:flex items-center hover:cursor-pointer "
+            >
+              <p className="text-dark-gray text-xs font-bold">
+                {currentUser.displayName}
+              </p>
+              {showDropdown ? (
+                <img src="/arrow_drop_up.svg" className="h-6 w-8" />
+              ) : (
+                <img src="/arrow_drop_down.svg" className="h-6 w-8" />
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </nav>
       {showDropdown && (
         <div

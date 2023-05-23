@@ -1,10 +1,12 @@
 import Login from "./Login";
+import { Link } from "react-router-dom";
 
 function Edit({ currentUser, setCurrentUser }) {
   if (!currentUser) {
     return <Login />;
   }
 
+  console.log(currentUser);
   //input change
   function handleChange(e) {
     setCurrentUser((prevUser) => ({
@@ -16,12 +18,17 @@ function Edit({ currentUser, setCurrentUser }) {
   //update user details
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(user);
   }
 
   return (
     <>
       <div className="">
+        <Link to="/" className="flex items-center px-2 hover:cursor-pointer">
+          <img src="/chevron_left.svg" className="h-6 w-6" />
+          <span className="text-dark-blue hover:underline text-sm font-medium">
+            Back
+          </span>
+        </Link>
         <div className="w-full flex items-center justify-center mt-4">
           <div className="border border-[#E0E0E0] p-2 h-auto   w-[680px] rounded-lg">
             <div className="flex items-center justify-start px-2 mt-2 ">
@@ -40,7 +47,7 @@ function Edit({ currentUser, setCurrentUser }) {
                 <label htmlFor="photo" className="flex items-center space-x-4">
                   <img
                     src={currentUser.photoURL}
-                    className="h-14 w-14 rounded-md relative hover:cursor-pointer"
+                    className="h-14 w-14 rounded-md relative hover:cursor-pointer bg-[rgba(0,0,0,0.4)]"
                   />
                   <img
                     src="/photo_camera.svg"
