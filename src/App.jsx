@@ -31,7 +31,7 @@ function App() {
   return (
     <>
       <div className="z-40">
-        <Navbar />
+        <Navbar currentUser={currentUser} />
       </div>
 
       <Routes>

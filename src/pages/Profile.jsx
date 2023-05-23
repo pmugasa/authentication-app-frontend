@@ -44,7 +44,9 @@ function Profile({ currentUser }) {
                 </tr>
                 <tr className="border-b border-[#E0E0E0] ">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">NAME</td>
-                  <td className="py-4 px-2 text-sm">{currentUser.name}</td>
+                  <td className="py-4 px-2 text-sm">
+                    {currentUser.displayName}
+                  </td>
                 </tr>
                 <tr className="border-b border-[#E0E0E0]">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">BIO</td>

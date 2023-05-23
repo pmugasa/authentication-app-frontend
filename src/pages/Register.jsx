@@ -1,6 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../services/firebase.config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { useState } from "react";
 
 function Register() {
@@ -17,7 +21,17 @@ function Register() {
       [e.target.name]: e.target.value,
     }));
   }
-
+  //auth providers
+  const googleProvider = new GoogleAuthProvider();
+  //register with google
+  function loginWithGoogle() {
+    signInWithPopup(auth, googleProvider)
+      .then((response) => {
+        console.log(response);
+        navigate("/");
+      })
+      .catch((error) => console.error(error));
+  }
   // registering user
   function registerUser(e) {
     e.preventDefault();
@@ -75,7 +89,11 @@ function Register() {
             or continue with these social profile
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img src="/Google.svg" className="w-10 h-10 cursor-pointer" />
+            <img
+              onClick={loginWithGoogle}
+              src="/Google.svg"
+              className="w-10 h-10 cursor-pointer"
+            />
             <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />
