@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../services/firebase.config";
+import { auth, db } from "../services/firebase.config";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+import { addDoc, collection, doc } from "firebase/firestore";
 import { useState } from "react";
 
 function Register() {
@@ -24,24 +25,41 @@ function Register() {
   //auth providers
   const googleProvider = new GoogleAuthProvider();
   //register with google
-  function loginWithGoogle() {
-    signInWithPopup(auth, googleProvider)
-      .then((response) => {
-        console.log(response);
-        navigate("/");
-      })
-      .catch((error) => console.error(error));
+  async function loginWithGoogle() {
+    const newUser = await signInWithPopup(auth, googleProvider);
+    const user = newUser.user;
+    if (user) {
+      const response = await addDoc(collection(db, "users"), {
+        photoURL: user.photoURL,
+        name: user.displayName,
+        bio: "",
+        phone: user.phoneNumber,
+        email: user.email,
+      });
+      console.log("RESPONSE", response);
+
+      navigate("/");
+    }
   }
   // registering user
-  function registerUser(e) {
+  async function registerUser(e) {
     e.preventDefault();
-    createUserWithEmailAndPassword(auth, formData.email, formData.password)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const newUser = await createUserWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
+    const user = newUser.user;
+    //add user to the database
+    const response = await addDoc(collection(db, "users"), {
+      photoURL: user.photoURL,
+      name: user.displayName,
+      bio: "",
+      phone: user.phoneNumber,
+      email: user.email,
+    });
+    console.log("RESPONSE", response);
+    navigate("/");
   }
 
   return (
