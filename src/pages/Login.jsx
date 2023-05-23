@@ -54,8 +54,8 @@ function Login() {
             <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />
           </div>
           <p className=" mt-8 text-center font-normal text-[14px] text-[#828282]">
-            Don't have an account yet?{" "}
-            <span className="text-dark-blue hover:underline">
+            Don't have an account yet?
+            <span className="text-dark-blue hover:underline ml-2">
               <Link to="/register">Register</Link>
             </span>
           </p>

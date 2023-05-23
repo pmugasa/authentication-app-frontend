@@ -29,7 +29,7 @@ function Navbar() {
       </nav>
       {showDropdown && (
         <div
-          className="absolute z-10 top-16 right-6"
+          className="absolute z-10 top-16 right-36"
           onMouseLeave={() => setShowDropdown(false)}
         >
           <Dropdown />

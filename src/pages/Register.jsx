@@ -62,7 +62,7 @@ function Register() {
           </div>
           <p className=" mt-6 text-center font-normal text-[14px] text-[#828282]">
             Already a member?
-            <span className="text-dark-blue hover:underline">
+            <span className="text-dark-blue hover:underline ml-2">
               <Link to="/login">Login</Link>
             </span>
           </p>
