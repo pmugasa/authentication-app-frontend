@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 function Dropdown() {
   return (
-    <ul className="text-xs text-dark-gray font-medium h-42 w-48 border border-very-light-gray rounded-lg px-4 py-2">
+    <ul className="text-xs text-dark-gray font-medium shadow-lg h-42 w-48 border border-very-light-gray rounded-lg px-4 py-2">
       <li className=" ">
         <Link
           to="/"

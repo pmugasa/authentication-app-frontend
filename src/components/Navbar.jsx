@@ -5,7 +5,7 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   return (
     <>
-      <nav className="w-full py-4 flex items-center justify-start ">
+      <nav className="w-full py-4 flex items-center justify-start relative">
         <Link to="/">
           <img src="/devchallenges.svg" />
         </Link>
@@ -16,7 +16,7 @@ function Navbar() {
           />
           <div
             onClick={() => setShowDropdown(!showDropdown)}
-            className="hidden sm:flex items-center hover:cursor-pointer relative"
+            className="hidden sm:flex items-center hover:cursor-pointer "
           >
             <p className="text-dark-gray text-xs font-bold">Xanthe Neal</p>
             {showDropdown ? (
@@ -29,7 +29,7 @@ function Navbar() {
       </nav>
       {showDropdown && (
         <div
-          className="absolute z-10 top-16 right-36"
+          className="absolute z-30 sm:top-16 sm:right-16 md:right-20 lg:right-36 bg-[#fafafb]"
           onMouseLeave={() => setShowDropdown(false)}
         >
           <Dropdown />

@@ -8,7 +8,9 @@ import Profile from "./pages/Profile";
 function App() {
   return (
     <Router>
-      <Navbar />
+      <div className="z-40">
+        <Navbar />
+      </div>
 
       <Routes>
         <Route path="/" element={<Profile />} />

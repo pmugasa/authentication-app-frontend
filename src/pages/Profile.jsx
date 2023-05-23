@@ -1,25 +1,29 @@
+import { Link } from "react-router-dom";
 function Profile() {
   return (
     <>
-      <div>
+      <div className="z-10">
         <div className="text-center p-2">
           <h1 className="font-semibold text-black text-lg">Personal Info</h1>
           <p className="font-light text-sm text-black">
             Basic info, like your name and photo
           </p>
         </div>
-        <div className="w-full flex items-center justify-center">
-          <div className="border border-[#E0E0E0] p-2 h-[450px] w-[845px]">
-            <div className="flex items-center justify-start px-2 border-b">
+        <div className="w-full flex items-center justify-center mt-4">
+          <div className="border border-[#E0E0E0] p-2 h-[450px] sm:h-[450px]   md:h-[420] w-[680px] rounded-lg">
+            <div className="flex items-center justify-start px-2 mt-2 ">
               <div>
                 <h3 className="font-semibold text-black text-md">Profile</h3>
-                <p className="font-normal text-dark-gray text-xs">
+                <p className="font-normal text-[#828282] text-xs">
                   Some info may be visible to other people
                 </p>
               </div>
-              <button className="ml-auto px-8 py-2 text-xs border border-[#828282] rounded-lg">
+              <Link
+                to="/edit"
+                className="ml-auto px-8 py-2 text-xs border hover:border-2 border-[#828282] rounded-lg"
+              >
                 Edit
-              </button>
+              </Link>
             </div>
             <table className="mt-6 table-auto w-full">
               <tbody>
