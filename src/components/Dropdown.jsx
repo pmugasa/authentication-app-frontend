@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../services/firebase.config";
 import { signOut } from "firebase/auth";
-function Dropdown() {
+function Dropdown({ setCurrentUser }) {
   const navigate = useNavigate();
   //logout user
   function handleLogout() {
     signOut(auth)
       .then(() => {
         //signout successfull
-        navigate("/");
+        setCurrentUser(null);
+        navigate("/login");
       })
       .catch((err) => {
         console.log(err);

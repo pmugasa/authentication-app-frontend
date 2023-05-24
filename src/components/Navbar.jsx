@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import { useState } from "react";
-function Navbar({ currentUser }) {
+function Navbar({ currentUser, setCurrentUser }) {
   const [showDropdown, setShowDropdown] = useState(false);
+  console.log("CURRENT USER FROM NAV", currentUser);
   return (
     <>
       <nav className="w-full py-4 px-2 flex items-center justify-start relative">
         <Link to="/">
           <img src="/devchallenges.svg" />
         </Link>
-        {currentUser && (
+        {currentUser !== null && (
           <div className="ml-auto flex items-center space-x-2">
             <img
               onClick={() => setShowDropdown(!showDropdown)}
@@ -37,7 +38,7 @@ function Navbar({ currentUser }) {
           className="absolute z-30 right-2 sm:top-16 sm:right-16 md:right-20 lg:right-36 bg-[#fafafb]"
           onMouseLeave={() => setShowDropdown(false)}
         >
-          <Dropdown />
+          <Dropdown setCurrentUser={setCurrentUser} />
         </div>
       )}
     </>

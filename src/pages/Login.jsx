@@ -10,7 +10,8 @@ import {
 } from "firebase/auth";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-function Login() {
+
+function Login({ setError, error }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -38,7 +39,7 @@ function Login() {
         console.log(response);
         navigate("/");
       })
-      .catch((error) => console.error(error));
+      .catch((err) => setError(err.message));
   }
 
   //login with facebook
@@ -48,7 +49,7 @@ function Login() {
         console.log(response);
         navigate("/");
       })
-      .catch((err) => console.error(err));
+      .catch((err) => setError(err.message));
   }
 
   //login with twitter
@@ -58,7 +59,7 @@ function Login() {
         console.log(response);
         navigate("/");
       })
-      .catch((err) => console.error(err));
+      .catch((err) => setError(err.message));
   }
 
   //login with github
@@ -68,7 +69,7 @@ function Login() {
         console.log(response);
         navigate("/");
       })
-      .catch((err) => console.error(err));
+      .catch((err) => setError(err.message));
   }
 
   //login user with email
@@ -76,11 +77,12 @@ function Login() {
     e.preventDefault();
 
     signInWithEmailAndPassword(auth, formData.email, formData.password)
-      .then((userCredentials) => {
+      .then(() => {
         navigate("/");
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        console.log("ERROR", err.message);
+        setError(err.message.substr(err.message.indexOf(" ") + 1));
       });
   }
 
@@ -91,6 +93,11 @@ function Login() {
           <form className="m-auto" onSubmit={handleLogin}>
             <div className="w-[344px] mx-auto my-10">
               <h3 className="my-4 font-bold text-lg text-dark-gray">Login</h3>
+              {error && (
+                <p className="text-red-500 font-medium text-sm text-center">
+                  {error}
+                </p>
+              )}
               <div className="flex items-center  h-10  p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
                 <img src="mail.svg" className="h-5 w-5" />
                 <input

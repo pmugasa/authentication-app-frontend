@@ -10,10 +10,7 @@ import { auth } from "./services/firebase.config";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  });
+  const [error, setError] = useState("");
 
   //attaching on auth observer
   useEffect(() => {
@@ -26,18 +23,35 @@ function App() {
       }
     });
   }, []);
-  console.log("user state", currentUser);
 
+  //handling errors
+  useEffect(() => {
+    if (error) {
+      const timeoutId = setTimeout(() => {
+        setError("");
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [error]);
   return (
     <>
       <div className="z-40">
-        <Navbar currentUser={currentUser} />
+        <Navbar currentUser={currentUser} setCurrentUser={setCurrentUser} />
       </div>
 
       <Routes>
         <Route path="/" element={<Profile currentUser={currentUser} />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={<Login error={error} setError={setError} />}
+        />
+        <Route
+          path="/register"
+          element={<Register error={error} setError={setError} />}
+        />
         <Route
           path="/edit"
           element={
