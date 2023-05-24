@@ -1,7 +1,24 @@
 import Login from "./Login";
 import { Link } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../services/firebase.config";
+import { useEffect, useState } from "react";
 
 function Profile({ currentUser }) {
+  const [bio, setBio] = useState("");
+
+  useEffect(() => {
+    const id = auth.currentUser.uid;
+    const docRef = doc(db, "users", id);
+    async function getBio() {
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setBio(docSnap.data());
+      }
+    }
+    getBio();
+  }, []);
+
   if (!currentUser) {
     return <Login />;
   }
@@ -50,10 +67,7 @@ function Profile({ currentUser }) {
                 </tr>
                 <tr className="border-b border-[#E0E0E0]">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">BIO</td>
-                  <td className="py-4 px-2 text-sm">
-                    I am a software developer and a big fan of devchallenge.io
-                    and frontend mentor
-                  </td>
+                  <td className="py-4 px-2 text-sm">{bio.bio}</td>
                 </tr>
                 <tr className="border-b border-[#E0E0E0]">
                   <td className="text-[#BDBDBD] text-sm py-4 px-2">PHONE</td>

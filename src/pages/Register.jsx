@@ -5,7 +5,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 
 function Register() {
@@ -26,20 +26,18 @@ function Register() {
   const googleProvider = new GoogleAuthProvider();
   //register with google
   async function loginWithGoogle() {
-    const newUser = await signInWithPopup(auth, googleProvider);
-    const user = newUser.user;
-    if (user) {
-      const response = await addDoc(collection(db, "users"), {
-        photoURL: user.photoURL,
-        name: user.displayName,
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const userId = result.user.uid;
+      await setDoc(doc(db, "users", userId), {
         bio: "",
-        phone: user.phoneNumber,
-        email: user.email,
       });
-      console.log("RESPONSE", response);
-
-      navigate("/");
+      console.log("USER ID", userId);
+    } catch (err) {
+      console.error(err);
     }
+
+    navigate("/");
   }
   // registering user
   async function registerUser(e) {

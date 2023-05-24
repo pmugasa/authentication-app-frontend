@@ -1,7 +1,24 @@
 import Login from "./Login";
 import { Link } from "react-router-dom";
+import {
+  updatePhoneNumber,
+  updatePassword,
+  updateProfile,
+  updateEmail,
+} from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../services/firebase.config";
+import { useState } from "react";
 
 function Edit({ currentUser, setCurrentUser }) {
+  const [formData, setFormData] = useState({
+    photoURL: "",
+    name: "",
+    bio: "",
+    phone: "",
+    email: "",
+    password: "",
+  });
   if (!currentUser) {
     return <Login />;
   }
@@ -9,15 +26,46 @@ function Edit({ currentUser, setCurrentUser }) {
   console.log(currentUser);
   //input change
   function handleChange(e) {
-    setCurrentUser((prevUser) => ({
-      ...prevUser,
+    setFormData((prevData) => ({
+      ...prevData,
       [e.target.name]: e.target.value,
     }));
   }
 
   //update user details
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    const user = auth.currentUser;
+    const id = user.uid;
+    const bioRef = doc(db, "users", id);
+
+    //update name & photo url
+    await updateProfile(auth.currentUser, {
+      displayName: formData.name,
+      photoURL:
+        "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80",
+    });
+
+    //update bio
+    if (formData.bio) {
+      await updateDoc(bioRef, {
+        bio: formData.bio,
+      });
+    }
+    //update phone number
+    else if (formData.phone) {
+      await updatePhoneNumber(auth.currentUser, formData.phone);
+    }
+    //update email
+    else if (formData.email) {
+      await updateEmail(user, formData.email);
+    }
+    //update password
+    else if (formData.password) {
+      const newPassword = formData.password;
+      const result = await updatePassword(user, newPassword);
+      console.log("password changedd", result);
+    }
   }
 
   return (
