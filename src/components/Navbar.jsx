@@ -3,7 +3,7 @@ import Dropdown from "./Dropdown";
 import { useState } from "react";
 function Navbar({ currentUser, setCurrentUser }) {
   const [showDropdown, setShowDropdown] = useState(false);
-  console.log("CURRENT USER FROM NAV", currentUser);
+
   return (
     <>
       <nav className="w-full py-4 px-2 flex items-center justify-start relative">

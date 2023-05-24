@@ -5,10 +5,10 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 
-function Register() {
+function Register({ error, setError }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,32 +32,29 @@ function Register() {
       await setDoc(doc(db, "users", userId), {
         bio: "",
       });
+      navigate("/");
       console.log("USER ID", userId);
     } catch (err) {
-      console.error(err);
+      (err) => setError(err.message);
     }
-
-    navigate("/");
   }
-  // registering user
+  // registering user with email & password
   async function registerUser(e) {
     e.preventDefault();
-    const newUser = await createUserWithEmailAndPassword(
-      auth,
-      formData.email,
-      formData.password
-    );
-    const user = newUser.user;
-    //add user to the database
-    const response = await addDoc(collection(db, "users"), {
-      photoURL: user.photoURL,
-      name: user.displayName,
-      bio: "",
-      phone: user.phoneNumber,
-      email: user.email,
-    });
-    console.log("RESPONSE", response);
-    navigate("/");
+    try {
+      const newUser = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const id = newUser.user.uid;
+      await setDoc(doc(db, "users", id), {
+        bio: "",
+      });
+      navigate("/");
+    } catch (err) {
+      (err) => setError(err.message);
+    }
   }
 
   return (
@@ -69,15 +66,22 @@ function Register() {
               <h3 className="my-2 font-bold text-lg text-dark-gray">
                 Join thousands of learners from around the world
               </h3>
+
               <p className="font-normal text-sm text-dark-gray mb-6">
                 Master web development by making real-life projects. There are
                 multiple paths for you to choose.
               </p>
+              {error && (
+                <p className="text-red-500 font-medium text-sm text-center my-2">
+                  {error}
+                </p>
+              )}
               <div className="flex items-center  h-10  p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
                 <img src="mail.svg" className="h-5 w-5" />
                 <input
                   type="email"
                   name="email"
+                  autoComplete="none"
                   onChange={handleChange}
                   placeholder="Email"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
@@ -88,6 +92,7 @@ function Register() {
                 <input
                   type="password"
                   name="password"
+                  autoComplete="none"
                   onChange={handleChange}
                   placeholder="Password"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
