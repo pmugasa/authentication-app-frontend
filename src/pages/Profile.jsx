@@ -7,21 +7,19 @@ import { useEffect, useState } from "react";
 function Profile({ currentUser }) {
   const [bio, setBio] = useState("");
 
-  useEffect(() => {
-    const id = auth.currentUser.uid;
-    const docRef = doc(db, "users", id);
-    async function getBio() {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setBio(docSnap.data());
-      }
-    }
-    getBio();
-  }, []);
-
   if (!currentUser) {
     return <Login />;
   }
+
+  const id = auth.currentUser.uid;
+  const docRef = doc(db, "users", id);
+  async function getBio() {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setBio(docSnap.data());
+    }
+  }
+  getBio();
 
   return (
     <>
