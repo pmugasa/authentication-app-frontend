@@ -33,17 +33,17 @@ function Login({ setError, error, setCurrentUser }) {
 
   //handle login with google
   const handleGoogleLogin = async () => {
-    const { user, error, session } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: "/profile",
+      },
     });
     if (error) {
-      console.log(error);
+      console.log("Error signing in", error);
     }
-
-    if (session?.user?.created_at === session?.user?.updated_at) {
-      console.log("new user account created", user);
-    } else {
-      console.log("existing user signed in", user);
+    if (data) {
+      console.log(data);
     }
   };
 
