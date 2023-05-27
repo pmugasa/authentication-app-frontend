@@ -34,7 +34,7 @@ function Login({ setError, error, setCurrentUser }) {
   //handle login with google
   const handleGoogleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
+      provider: "google",
       options: {
         redirectTo: "/profile",
       },
