@@ -1,82 +1,116 @@
-import Login from "./Login";
-import { Link } from "react-router-dom";
-import {
-  updatePhoneNumber,
-  updatePassword,
-  updateProfile,
-  updateEmail,
-} from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../services/firebase.config";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
 
-function Edit({ currentUser, setCurrentUser }) {
-  const [formData, setFormData] = useState({
-    photoURL: "",
-    name: "",
-    bio: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-  if (!currentUser) {
-    return <Login />;
-  }
+function Edit({ session, avatar_url }) {
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [showInput, setShowInput] = useState(false);
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  console.log(currentUser);
-  //input change
-  function handleChange(e) {
-    setFormData((prevData) => ({
-      ...prevData,
-      [e.target.name]: e.target.value,
-    }));
-  }
+  //back button
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  useEffect(() => {
+    setUser(session.user);
+  }, [session]);
 
   //update user details
   async function handleSubmit(e) {
     e.preventDefault();
-    const user = auth.currentUser;
-    const id = user.uid;
-    const bioRef = doc(db, "users", id);
 
-    //update name & photo url
-    await updateProfile(auth.currentUser, {
-      displayName: formData.name,
-      photoURL:
-        "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80",
-    });
+    if (photoUrl) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: photoUrl })
+        .eq("id", user.id)
+        .select();
+      if (error) {
+        console.log(error);
+        return;
+      }
+    }
+    if (name) {
+      //update user name
+      const { error } = await supabase
+        .from("profiles")
+        .update({ name: name })
+        .eq("id", user.id)
+        .select();
+      if (error) {
+        console.log(error);
+        return;
+      }
+    }
+    if (bio) {
+      //update userbiio
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ bio: bio })
+        .eq("id", user.id)
+        .select();
+      if (error) {
+        console.log(error);
+        return;
+      }
 
-    //update bio
-    if (formData.bio) {
-      await updateDoc(bioRef, {
-        bio: formData.bio,
+      console.log(data, "from updating phone");
+    }
+    if (phone) {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ phone: phone })
+        .eq("id", user.id)
+        .select();
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      console.log(data, "from updating phone");
+    }
+    if (email) {
+      const { data, error } = await supabase.auth.updateUser({
+        email: email,
       });
+      if (error) {
+        console.log(error);
+        return;
+      }
+      console.log(data);
     }
-    //update phone number
-    else if (formData.phone) {
-      await updatePhoneNumber(auth.currentUser, formData.phone);
+    if (password) {
+      const { data, error } = await supabase.auth.updateUser({
+        password: password,
+      });
+      if (error) {
+        console.log(error);
+        return;
+      }
+      console.log(data, "from updating password");
     }
-    //update email
-    else if (formData.email) {
-      await updateEmail(user, formData.email);
-    }
-    //update password
-    else if (formData.password) {
-      const newPassword = formData.password;
-      const result = await updatePassword(user, newPassword);
-      console.log("password changedd", result);
-    }
+    goBack();
   }
 
   return (
     <>
       <div className="">
-        <Link to="/" className="flex items-center px-2 hover:cursor-pointer">
+        <div
+          onClick={goBack}
+          className="flex items-center px-2 hover:cursor-pointer"
+        >
           <img src="/chevron_left.svg" className="h-6 w-6" />
           <span className="text-dark-blue hover:underline text-sm font-medium">
             Back
           </span>
-        </Link>
+        </div>
         <div className="w-full flex items-center justify-center mt-4">
           <div className="border border-[#E0E0E0] p-2 h-auto   w-[680px] rounded-lg">
             <div className="flex items-center justify-start px-2 mt-2 ">
@@ -92,27 +126,32 @@ function Edit({ currentUser, setCurrentUser }) {
 
             <form className="px-2 mt-4" onSubmit={handleSubmit}>
               <div className="">
-                <label htmlFor="photo" className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4">
                   <img
-                    src={currentUser.photoURL}
+                    src={avatar_url}
                     className="h-14 w-14 rounded-md relative hover:cursor-pointer bg-[rgba(0,0,0,0.4)]"
                   />
                   <img
                     src="/photo_camera.svg"
                     className="h-7 w-7 absolute hover:cursor-pointer"
+                    onClick={() => setShowInput(!showInput)}
                   />
 
-                  <input
-                    id="photo"
-                    type="file"
-                    name="photo"
-                    className="hidden"
-                    onChange={handleChange}
-                  />
-                  <span className=" blocktext-sm font-medium cursor-pointer text-[#BDBDBD]">
+                  <span
+                    className=" blocktext-sm font-medium cursor-pointer text-[#BDBDBD]"
+                    onClick={() => setShowInput(!showInput)}
+                  >
                     CHANGE PHOTO
                   </span>
-                </label>
+                </div>
+                {showInput && (
+                  <input
+                    type="text"
+                    placeholder="Paste your image url..."
+                    className="block mt-4 h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD]"
+                    onChange={(e) => setPhotoUrl(e.target.value)}
+                  />
+                )}
               </div>
               <div className="my-2">
                 <label htmlFor="name" className="text-xs">
@@ -122,7 +161,7 @@ function Edit({ currentUser, setCurrentUser }) {
                   type="text"
                   id="name"
                   name="name"
-                  onChange={handleChange}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD]"
                 />
@@ -134,7 +173,7 @@ function Edit({ currentUser, setCurrentUser }) {
                 <textarea
                   id="bio"
                   name="bio"
-                  onChange={handleChange}
+                  onChange={(e) => setBio(e.target.value)}
                   placeholder="Enter your bio..."
                   className="block text-xs text-[#BDBDBD] resize-none box-border h-16 w-[344px] px-4 py-2 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD]"
                 ></textarea>
@@ -147,7 +186,7 @@ function Edit({ currentUser, setCurrentUser }) {
                   type="tel"
                   id="phone"
                   name="phone"
-                  onChange={handleChange}
+                  onChange={(e) => setPhone(e.target.value)}
                   placeholder="Enter your phone..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD] "
                 />
@@ -160,7 +199,7 @@ function Edit({ currentUser, setCurrentUser }) {
                   type="email"
                   id="email"
                   name="email"
-                  onChange={handleChange}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD] "
                 />
@@ -173,7 +212,7 @@ function Edit({ currentUser, setCurrentUser }) {
                   type="password"
                   id="password"
                   name="password"
-                  onChange={handleChange}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your new password..."
                   className="block h-10 w-[344px] px-4 outline outline-none border border-[#828282] rounded-md focus:outline focus:outline-dark-blue focus:border-none placeholder:text-xs placeholder:text-[#BDBDBD] "
                 />

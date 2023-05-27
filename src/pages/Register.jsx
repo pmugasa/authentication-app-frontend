@@ -1,19 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { auth, db } from "../services/firebase.config";
-import {
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
+import { supabase } from "../services/supabase";
 
-function Register({ error, setError }) {
+function Register({ err, setErr }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
 
   //input changes
   function handleChange(e) {
@@ -22,38 +15,21 @@ function Register({ error, setError }) {
       [e.target.name]: e.target.value,
     }));
   }
-  //auth providers
-  const googleProvider = new GoogleAuthProvider();
-  //register with google
-  async function loginWithGoogle() {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const userId = result.user.uid;
-      await setDoc(doc(db, "users", userId), {
-        bio: "",
-      });
-      navigate("/");
-      console.log("USER ID", userId);
-    } catch (err) {
-      (err) => setError(err.message);
-    }
-  }
+
+  const navigate = useNavigate();
+
   // registering user with email & password
   async function registerUser(e) {
     e.preventDefault();
-    try {
-      const newUser = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-      const id = newUser.user.uid;
-      await setDoc(doc(db, "users", id), {
-        bio: "",
-      });
-      navigate("/");
-    } catch (err) {
-      (err) => setError(err.message);
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) {
+      return console.log(error);
+    } else {
+      navigate("/profile");
     }
   }
 
@@ -71,9 +47,9 @@ function Register({ error, setError }) {
                 Master web development by making real-life projects. There are
                 multiple paths for you to choose.
               </p>
-              {error && (
+              {err && (
                 <p className="text-red-500 font-medium text-sm text-center my-2">
-                  {error}
+                  {err}
                 </p>
               )}
               <div className="flex items-center  h-10  p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
@@ -110,11 +86,7 @@ function Register({ error, setError }) {
             or continue with these social profile
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img
-              onClick={loginWithGoogle}
-              src="/Google.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
+            <img src="/Google.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />

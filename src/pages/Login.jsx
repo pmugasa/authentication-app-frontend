@@ -1,28 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { auth } from "../services/firebase.config";
-import {
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  signInWithPopup,
-  GithubAuthProvider,
-  TwitterAuthProvider,
-} from "firebase/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { supabase } from "../services/supabase";
 
-function Login({ setError, error }) {
+function Login({ setError, error, setCurrentUser }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
-
-  //auth providers
-  const googleProvider = new GoogleAuthProvider();
-  const facebookProvider = new FacebookAuthProvider();
-  const twitterProvider = new TwitterAuthProvider();
-  const githubProvider = new GithubAuthProvider();
 
   //input changes
   function handleChange(e) {
@@ -31,60 +15,37 @@ function Login({ setError, error }) {
       [e.target.name]: e.target.value,
     }));
   }
-
-  //login with google
-  function loginWithGoogle() {
-    signInWithPopup(auth, googleProvider)
-      .then((response) => {
-        console.log(response);
-        navigate("/");
-      })
-      .catch((err) => setError(err.message));
-  }
-
-  //login with facebook
-  function loginWithFacebook() {
-    signInWithPopup(auth, facebookProvider)
-      .then((response) => {
-        console.log(response);
-        navigate("/");
-      })
-      .catch((err) => setError(err.message));
-  }
-
-  //login with twitter
-  function loginWithTwitter() {
-    signInWithPopup(auth, twitterProvider)
-      .then((response) => {
-        console.log(response);
-        navigate("/");
-      })
-      .catch((err) => setError(err.message));
-  }
-
-  //login with github
-  function loginWithGithub() {
-    signInWithPopup(auth, githubProvider)
-      .then((response) => {
-        console.log(response);
-        navigate("/");
-      })
-      .catch((err) => setError(err.message));
-  }
-
+  const navigate = useNavigate();
   //login user with email
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
 
-    signInWithEmailAndPassword(auth, formData.email, formData.password)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log("ERROR", err.message);
-        setError(err.message.substr(err.message.indexOf(" ") + 1));
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+    if (!data) {
+      return console.log(error);
+    }
+    //setCurrentUser(data.session.user);
+    navigate("/profile");
   }
+
+  //handle login with google
+  const handleGoogleLogin = async () => {
+    const { user, error, session } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+    if (error) {
+      console.log(error);
+    }
+
+    if (session?.user?.created_at === session?.user?.updated_at) {
+      console.log("new user account created", user);
+    } else {
+      console.log("existing user signed in", user);
+    }
+  };
 
   return (
     <>
@@ -131,25 +92,13 @@ function Login({ setError, error }) {
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 ">
             <img
-              onClick={loginWithGoogle}
+              onClick={handleGoogleLogin}
               src="/Google.svg"
               className="w-10 h-10 cursor-pointer"
             />
-            <img
-              onClick={loginWithFacebook}
-              src="/Facebook.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
-            <img
-              onClick={loginWithTwitter}
-              src="/Twitter.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
-            <img
-              onClick={loginWithGithub}
-              src="/Github.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
+            <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
+            <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
+            <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />
           </div>
           <p className=" mt-8 text-center font-normal text-[14px] text-[#828282]">
             Don't have an account yet?

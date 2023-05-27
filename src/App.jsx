@@ -1,62 +1,84 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "./services/supabase";
+
+//components
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Edit from "./pages/Edit";
 import Profile from "./pages/Profile";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./services/firebase.config";
+import Home from "./pages/Home";
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [error, setError] = useState("");
-
-  //attaching on auth observer
+  const [session, setSession] = useState(null);
+  const [avatar_url, setAvatarUrl] = useState("");
+  const [err, setErr] = useState("");
+  const navigate = useNavigate();
+  //get authenticated user
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        //user is signed in
-        setCurrentUser(user);
-      } else {
-        console.log("user logged out");
-      }
-    });
+    const getUser = async () => {
+      //get user session
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+      });
+
+      //listening to changes in user auth
+      supabase.auth.onAuthStateChange((event, session) => {
+        console.log(event, session);
+        if (!session) {
+          navigate("/login");
+        } else {
+          setSession(session);
+          navigate("/profile");
+        }
+      });
+    };
+    getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //handling errors
   useEffect(() => {
-    if (error) {
+    if (err) {
       const timeoutId = setTimeout(() => {
-        setError("");
+        setErr("");
       }, 3000);
 
       return () => {
         clearTimeout(timeoutId);
       };
     }
-  }, [error]);
+  }, [err]);
   return (
     <>
       <div className="z-40">
-        <Navbar currentUser={currentUser} setCurrentUser={setCurrentUser} />
+        <Navbar session={session} avatar_url={avatar_url} />
       </div>
 
       <Routes>
-        <Route path="/" element={<Profile currentUser={currentUser} />} />
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              session={session}
+              avatar_url={avatar_url}
+              setAvatarUrl={setAvatarUrl}
+            />
+          }
+        />
         <Route
           path="/login"
-          element={<Login error={error} setError={setError} />}
+          element={<Login error={err} setError={setErr} />}
         />
         <Route
           path="/register"
-          element={<Register error={error} setError={setError} />}
+          element={<Register error={err} setError={setErr} />}
         />
         <Route
           path="/edit"
-          element={
-            <Edit currentUser={currentUser} setCurrentUser={setCurrentUser} />
-          }
+          element={<Edit session={session} avatar_url={avatar_url} />}
         />
       </Routes>
     </>

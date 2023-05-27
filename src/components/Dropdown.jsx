@@ -1,19 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../services/firebase.config";
-import { signOut } from "firebase/auth";
-function Dropdown({ setCurrentUser }) {
-  const navigate = useNavigate();
+import { Link } from "react-router-dom";
+import { supabase } from "../services/supabase";
+function Dropdown({ session }) {
   //logout user
-  function handleLogout() {
-    signOut(auth)
-      .then(() => {
-        //signout successfull
-        setCurrentUser(null);
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  async function handleLogout() {
+    const { error } = await supabase.auth.signOut();
+    error ? console.log("error", error) : console.log("logged out");
   }
   return (
     <ul className="text-xs text-dark-gray font-medium shadow-lg h-42 w-48 border border-very-light-gray rounded-lg px-4 py-2">
