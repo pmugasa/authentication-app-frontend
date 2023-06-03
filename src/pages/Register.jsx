@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { auth } from "../services/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -31,6 +32,16 @@ function Register() {
       })
       .catch((err) => console.error(err));
   }
+
+  //sign up user with google
+  const registerWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((res) => {
+        console.log("signed in user with google", res.user);
+      })
+      .catch((err) => setError(err.message));
+  };
 
   return (
     <>
@@ -85,7 +96,11 @@ function Register() {
             or continue with these social profile
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img src="/Google.svg" className="w-10 h-10 cursor-pointer" />
+            <img
+              onClick={registerWithGoogle}
+              src="/Google.svg"
+              className="w-10 h-10 cursor-pointer"
+            />
             <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />

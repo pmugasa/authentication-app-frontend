@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Edit from "./pages/Edit";
 import Profile from "./pages/Profile";
-import Home from "./pages/Home";
+
 import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
         return navigate("/login");
       } else {
         setCurrentUser(user);
-        navigate("/profile");
+        navigate("/");
       }
     });
     return () => unsubscribe();
@@ -58,8 +58,7 @@ function App() {
       </div>
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile user={profile} />} />
+        <Route path="/" element={<Profile user={profile} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route

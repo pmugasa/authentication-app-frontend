@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { auth } from "../services/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 
 function Login({ setErr, err }) {
   const [email, setEmail] = useState("");
@@ -20,7 +24,6 @@ function Login({ setErr, err }) {
     }
   }, [error]);
 
-  //const navigate = useNavigate();
   //login user with email
   async function handleLogin(e) {
     e.preventDefault();
@@ -33,6 +36,16 @@ function Login({ setErr, err }) {
       })
       .catch((err) => setError(err.message));
   }
+
+  //login user with google
+  const loginWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((res) => {
+        console.log("signed in user with google", res.user);
+      })
+      .catch((err) => setError(err.message));
+  };
 
   return (
     <>
@@ -78,7 +91,11 @@ function Login({ setErr, err }) {
             or continue with these social profile
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img src="/Google.svg" className="w-10 h-10 cursor-pointer" />
+            <img
+              onClick={loginWithGoogle}
+              src="/Google.svg"
+              className="w-10 h-10 cursor-pointer"
+            />
             <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />

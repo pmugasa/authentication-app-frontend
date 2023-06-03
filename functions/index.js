@@ -5,13 +5,25 @@ admin.initializeApp();
 
 // auth trigger when user creates an account
 exports.newUserSignUp = functions.auth.user().onCreate((user) => {
-  return admin.firestore().collection("users").doc(user.uid).set({
-    photoUrl: user.photoURL,
-    name: user.displayName,
-    bio: null,
-    phone: user.phoneNumber,
-    email: user.email,
-  });
+  if (
+    user.providerData.some((provider) => provider.providerId === "google.com")
+  ) {
+    return admin.firestore().collection("users").doc(user.uid).set({
+      photoUrl: user.photoURL,
+      name: user.displayName,
+      bio: null,
+      phone: user.phoneNumber,
+      email: user.email,
+    });
+  } else {
+    return admin.firestore().collection("users").doc(user.uid).set({
+      photoUrl: user.photoURL,
+      name: user.displayName,
+      bio: null,
+      phone: user.phoneNumber,
+      email: user.email,
+    });
+  }
 });
 
 // callable function when user updates account info
