@@ -1,36 +1,35 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { supabase } from "../services/supabase";
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { auth } from "../services/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-function Register({ err, setErr }) {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  //input changes
-  function handleChange(e) {
-    setFormData((prevCred) => ({
-      ...prevCred,
-      [e.target.name]: e.target.value,
-    }));
-  }
-
-  const navigate = useNavigate();
-
-  // registering user with email & password
-  async function registerUser(e) {
-    e.preventDefault();
-    const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-    });
-
+  //handling errors
+  useEffect(() => {
     if (error) {
-      return console.log(error);
-    } else {
-      navigate("/profile");
+      const timeoutId = setTimeout(() => {
+        setError("");
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
+  }, [error]);
+  // registering user with email & password
+  function registerUser(e) {
+    e.preventDefault();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+
+        console.log("user created:", user);
+      })
+      .catch((err) => console.error(err));
   }
 
   return (
@@ -42,23 +41,23 @@ function Register({ err, setErr }) {
               <h3 className="my-2 font-bold text-lg text-dark-gray">
                 Join thousands of learners from around the world
               </h3>
-
+              {error && (
+                <p className="text-red-500 font-medium text-sm text-center">
+                  {error}
+                </p>
+              )}
               <p className="font-normal text-sm text-dark-gray mb-6">
                 Master web development by making real-life projects. There are
                 multiple paths for you to choose.
               </p>
-              {err && (
-                <p className="text-red-500 font-medium text-sm text-center my-2">
-                  {err}
-                </p>
-              )}
+
               <div className="flex items-center  h-10  p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
                 <img src="mail.svg" className="h-5 w-5" />
                 <input
                   type="email"
                   name="email"
                   autoComplete="none"
-                  onChange={handleChange}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
@@ -69,7 +68,7 @@ function Register({ err, setErr }) {
                   type="password"
                   name="password"
                   autoComplete="none"
-                  onChange={handleChange}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />

@@ -1,45 +1,7 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "../services/supabase";
 
-function Profile({ session, avatar_url, setAvatarUrl }) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    const getProfile = async () => {
-      setIsLoading(true);
-      const { user } = session;
-      console.log("SESSION IN PROFILE:", session);
-
-      let { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        console.error("ERROR FETCHING USER DATA", error);
-      } else if (data) {
-        console.log("RESULTS FROM PROFILE PAGE:", data);
-        setAvatarUrl(data.avatar_url);
-        setBio(data.bio);
-        setEmail(user.email);
-        setName(data.name);
-        setPhone(data.phone);
-      }
-      setIsLoading(false);
-    };
-
-    getProfile();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (isLoading) {
+function Profile({ user }) {
+  if (!user) {
     return <div>fetching user data....</div>;
   } else {
     return (
@@ -72,24 +34,27 @@ function Profile({ session, avatar_url, setAvatarUrl }) {
                   <tr className="border-b border-t border-[#E0E0E0] ">
                     <td className="text-[#BDBDBD] text-sm px-2 py-4 ">PHOTO</td>
                     <td className="py-4 px-2">
-                      <img src={avatar_url} className="w-10 h-10 rounded-md " />
+                      <img
+                        src={user.photoUrl}
+                        className="w-10 h-10 rounded-md "
+                      />
                     </td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0] ">
                     <td className="text-[#BDBDBD] text-sm py-4 px-2">NAME</td>
-                    <td className="py-4 px-2 text-sm">{name}</td>
+                    <td className="py-4 px-2 text-sm">{user.name}</td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0]">
                     <td className="text-[#BDBDBD] text-sm py-4 px-2">BIO</td>
-                    <td className="py-4 px-2 text-sm">{bio}</td>
+                    <td className="py-4 px-2 text-sm">{user.bio}</td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0]">
                     <td className="text-[#BDBDBD] text-sm py-4 px-2">PHONE</td>
-                    <td className="py-4 px-2 text-sm">{phone}</td>
+                    <td className="py-4 px-2 text-sm">{user.phone}</td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0]">
                     <td className="text-[#BDBDBD] text-sm py-2 px-2">EMAIL</td>
-                    <td className="py-4 px-2 text-sm">{email}</td>
+                    <td className="py-4 px-2 text-sm">{user.email}</td>
                   </tr>
                   <tr className="">
                     <td className="text-[#BDBDBD] text-sm py-2 px-2">

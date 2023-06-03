@@ -1,7 +1,8 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase } from "./services/supabase";
-
+import { auth } from "./services/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "./services/firebase";
 //components
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
@@ -9,77 +10,59 @@ import Register from "./pages/Register";
 import Edit from "./pages/Edit";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
+import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
-  const [session, setSession] = useState(null);
-  const [avatar_url, setAvatarUrl] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
   const [err, setErr] = useState("");
+  const [profile, setProfile] = useState({});
+
   const navigate = useNavigate();
+
   //get authenticated user
   useEffect(() => {
-    const getUser = async () => {
-      //get user session
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-      });
-
-      //listening to changes in user auth
-      supabase.auth.onAuthStateChange((event, session) => {
-        console.log(event, session);
-        if (!session) {
-          navigate("/login");
-        } else {
-          setSession(session);
-          navigate("/profile");
-        }
-      });
-    };
-    getUser();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        return navigate("/login");
+      } else {
+        setCurrentUser(user);
+        navigate("/profile");
+      }
+    });
+    return () => unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //handling errors
-  useEffect(() => {
-    if (err) {
-      const timeoutId = setTimeout(() => {
-        setErr("");
-      }, 3000);
+  //this only runs when user is logged in
 
-      return () => {
-        clearTimeout(timeoutId);
-      };
+  //fetching user data from the db
+  useEffect(() => {
+    if (currentUser) {
+      const uid = currentUser.uid;
+
+      const unsub = onSnapshot(doc(db, "users", uid), (doc) => {
+        const data = doc.data();
+        setProfile(data);
+      });
     }
-  }, [err]);
+  }, [currentUser]);
+
   return (
     <>
       <div className="z-40">
-        <Navbar session={session} avatar_url={avatar_url} />
+        <Navbar
+          profile={profile}
+          user={currentUser}
+          setCurrentUser={setCurrentUser}
+        />
       </div>
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route
-          path="/profile"
-          element={
-            <Profile
-              session={session}
-              avatar_url={avatar_url}
-              setAvatarUrl={setAvatarUrl}
-            />
-          }
-        />
-        <Route
-          path="/login"
-          element={<Login error={err} setError={setErr} />}
-        />
-        <Route
-          path="/register"
-          element={<Register error={err} setError={setErr} />}
-        />
-        <Route
-          path="/edit"
-          element={<Edit session={session} avatar_url={avatar_url} />}
-        />
+        <Route path="/profile" element={<Profile user={profile} />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/edit" element={<Edit user={currentUser} />} />
       </Routes>
     </>
   );

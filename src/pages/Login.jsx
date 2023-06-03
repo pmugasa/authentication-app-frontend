@@ -1,51 +1,38 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { supabase } from "../services/supabase";
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { auth } from "../services/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-function Login({ setError, error, setCurrentUser }) {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+function Login({ setErr, err }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  //handling errors
+  useEffect(() => {
+    if (error) {
+      const timeoutId = setTimeout(() => {
+        setError("");
+      }, 3000);
 
-  //input changes
-  function handleChange(e) {
-    setFormData((prevCred) => ({
-      ...prevCred,
-      [e.target.name]: e.target.value,
-    }));
-  }
-  const navigate = useNavigate();
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [error]);
+
+  //const navigate = useNavigate();
   //login user with email
   async function handleLogin(e) {
     e.preventDefault();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: formData.email,
-      password: formData.password,
-    });
-    if (!data) {
-      return console.log(error);
-    }
-    //setCurrentUser(data.session.user);
-    navigate("/profile");
-  }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
 
-  //handle login with google
-  const handleGoogleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "/profile",
-      },
-    });
-    if (error) {
-      console.log("Error signing in", error);
-    }
-    if (data) {
-      console.log(data);
-    }
-  };
+        console.log("user logged in:", user);
+      })
+      .catch((err) => setError(err.message));
+  }
 
   return (
     <>
@@ -64,7 +51,7 @@ function Login({ setError, error, setCurrentUser }) {
                 <input
                   type="email"
                   name="email"
-                  onChange={handleChange}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
@@ -74,7 +61,7 @@ function Login({ setError, error, setCurrentUser }) {
                 <input
                   type="password"
                   name="password"
-                  onChange={handleChange}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
@@ -91,11 +78,7 @@ function Login({ setError, error, setCurrentUser }) {
             or continue with these social profile
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img
-              onClick={handleGoogleLogin}
-              src="/Google.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
+            <img src="/Google.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
             <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />

@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "../services/supabase";
+import { useState, useEffect } from "react";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../services/firebase";
+import { updateEmail, updatePassword } from "firebase/auth";
+import { auth } from "../services/firebase";
 
-function Edit({ session, avatar_url }) {
+function Edit({ user }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [showInput, setShowInput] = useState(false);
   const [name, setName] = useState("");
@@ -10,93 +13,99 @@ function Edit({ session, avatar_url }) {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  const [error, setError] = useState("");
+
+  //handling errors
+  useEffect(() => {
+    if (error) {
+      const timeoutId = setTimeout(() => {
+        setError("");
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [error]);
 
   //back button
   const goBack = () => {
     navigate(-1);
   };
 
-  useEffect(() => {
-    setUser(session.user);
-  }, [session]);
-
   //update user details
   async function handleSubmit(e) {
     e.preventDefault();
+    //user document
+    const docRef = doc(db, "users", user.uid);
 
-    if (photoUrl) {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ avatar_url: photoUrl })
-        .eq("id", user.id)
-        .select();
-      if (error) {
-        console.log(error);
-        return;
-      }
-    }
+    //updating user name or photo
     if (name) {
-      //update user name
-      const { error } = await supabase
-        .from("profiles")
-        .update({ name: name })
-        .eq("id", user.id)
-        .select();
-      if (error) {
-        console.log(error);
-        return;
-      }
+      updateDoc(docRef, {
+        name,
+        photoUrl,
+        phone,
+        bio,
+      })
+        .then(() => {
+          console.log("Updated successfully");
+        })
+        .catch((err) => console.error("something happened:", err));
     }
-    if (bio) {
-      //update userbiio
-      const { data, error } = await supabase
-        .from("profiles")
-        .update({ bio: bio })
-        .eq("id", user.id)
-        .select();
-      if (error) {
-        console.log(error);
-        return;
-      }
 
-      console.log(data, "from updating phone");
+    //updating avatar
+    if (photoUrl) {
+      updateDoc(docRef, {
+        photoUrl,
+      })
+        .then(() => {
+          console.log("Updated successfully");
+        })
+        .catch((err) => console.error("something happened:", err));
     }
+    //updating phone
     if (phone) {
-      const { data, error } = await supabase
-        .from("profiles")
-        .update({ phone: phone })
-        .eq("id", user.id)
-        .select();
-      if (error) {
-        console.log(error);
-        return;
-      }
+      updateDoc(docRef, {
+        phone,
+      })
+        .then(() => {
+          console.log("Updated successfully");
+        })
+        .catch((err) => console.error("something happened:", err));
+    }
 
-      console.log(data, "from updating phone");
+    //updating bio
+    if (bio) {
+      updateDoc(docRef, {
+        bio,
+      })
+        .then(() => {
+          console.log("Updated successfully");
+        })
+        .catch((err) => console.error("something happened:", err));
     }
+
+    //updating user email
     if (email) {
-      const { data, error } = await supabase.auth.updateUser({
-        email: email,
-      });
-      if (error) {
-        console.log(error);
-        return;
-      }
-      console.log(data);
+      updateEmail(auth.currentUser, email)
+        .then(() => {
+          console.log("Email updated successfully");
+        })
+        .catch((err) => console.error("Opps something wrong!", err));
     }
+
+    //updating password
     if (password) {
-      const { data, error } = await supabase.auth.updateUser({
-        password: password,
-      });
-      if (error) {
-        console.log(error);
-        return;
-      }
-      console.log(data, "from updating password");
+      updatePassword(auth.currentUser, password)
+        .then(() => {
+          console.log("password was successfully updated");
+        })
+        .catch((err) => console.error("could not update password:", err));
     }
-    goBack();
+    alert("Successfully updated profile ✅");
+    navigate(-1);
   }
 
   return (
@@ -123,12 +132,16 @@ function Edit({ session, avatar_url }) {
                 </p>
               </div>
             </div>
-
+            {error && (
+              <p className="text-red-500 font-medium text-sm text-center">
+                {error}
+              </p>
+            )}
             <form className="px-2 mt-4" onSubmit={handleSubmit}>
               <div className="">
                 <div className="flex items-center space-x-4">
                   <img
-                    src={avatar_url}
+                    src={""}
                     className="h-14 w-14 rounded-md relative hover:cursor-pointer bg-[rgba(0,0,0,0.4)]"
                   />
                   <img

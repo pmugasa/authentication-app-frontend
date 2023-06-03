@@ -1,16 +1,22 @@
 import { Link } from "react-router-dom";
-import { supabase } from "../services/supabase";
-function Dropdown({ session }) {
+import { auth } from "../services/firebase";
+import { signOut } from "firebase/auth";
+
+function Dropdown() {
   //logout user
-  async function handleLogout() {
-    const { error } = await supabase.auth.signOut();
-    error ? console.log("error", error) : console.log("logged out");
-  }
+  const handleSignout = (setCurrentUser) => {
+    signOut(auth)
+      .then(() => {
+        setCurrentUser(null);
+        console.log("user signed out");
+      })
+      .catch((err) => console.error("error signing  out user", err));
+  };
   return (
     <ul className="text-xs text-dark-gray font-medium shadow-lg h-42 w-48 border border-very-light-gray rounded-lg px-4 py-2">
       <li className=" ">
         <Link
-          to="/"
+          to="/profile"
           className="flex items-center space-x-2 w-full h-10 px-4 rounded-lg hover:bg-very-light-gray"
         >
           <img src="/account_circle.svg" className="h-4 w-4" />
@@ -24,7 +30,7 @@ function Dropdown({ session }) {
       </li>
       <div className="border border-very-light-gray my-2 "></div>
       <li
-        onClick={handleLogout}
+        onClick={handleSignout}
         className="flex hover:cursor-pointer items-center space-x-2 text-warning  w-full h-10 px-4 rounded-lg hover:bg-very-light-gray"
       >
         <img src="/logout.svg" className="h-4 w-4 " />
