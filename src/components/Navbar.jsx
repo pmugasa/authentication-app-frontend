@@ -4,7 +4,7 @@ import { useState } from "react";
 
 function Navbar({ user, profile, setCurrentUser }) {
   const [showDropdown, setShowDropdown] = useState(false);
-  console.log(user);
+
   return (
     <>
       <nav className="w-full py-4 px-2 flex items-center justify-start relative">
@@ -16,7 +16,11 @@ function Navbar({ user, profile, setCurrentUser }) {
           <div className="ml-auto flex items-center space-x-2 ">
             <img
               onClick={() => setShowDropdown(!showDropdown)}
-              src={profile.photoUrl}
+              src={
+                profile.photoUrl
+                  ? profile.photoUrl
+                  : "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80"
+              }
               className="w-8 h-8 rounded-md hover:cursor-pointer"
             />
             <div

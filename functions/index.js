@@ -6,9 +6,9 @@ admin.initializeApp();
 // auth trigger when user creates an account
 exports.newUserSignUp = functions.auth.user().onCreate((user) => {
   return admin.firestore().collection("users").doc(user.uid).set({
-    avatar_url: user.photoURL,
+    photoUrl: user.photoURL,
     name: user.displayName,
-    bio: "",
+    bio: null,
     phone: user.phoneNumber,
     email: user.email,
   });

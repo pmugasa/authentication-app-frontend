@@ -5,7 +5,7 @@ import { db } from "../services/firebase";
 import { updateEmail, updatePassword } from "firebase/auth";
 import { auth } from "../services/firebase";
 
-function Edit({ user }) {
+function Edit({ user, profile }) {
   const [photoUrl, setPhotoUrl] = useState("");
   const [showInput, setShowInput] = useState(false);
   const [name, setName] = useState("");
@@ -45,12 +45,9 @@ function Edit({ user }) {
     if (name) {
       updateDoc(docRef, {
         name,
-        photoUrl,
-        phone,
-        bio,
       })
         .then(() => {
-          console.log("Updated successfully");
+          setName("");
         })
         .catch((err) => console.error("something happened:", err));
     }
@@ -61,7 +58,7 @@ function Edit({ user }) {
         photoUrl,
       })
         .then(() => {
-          console.log("Updated successfully");
+          setPhotoUrl("");
         })
         .catch((err) => console.error("something happened:", err));
     }
@@ -71,7 +68,7 @@ function Edit({ user }) {
         phone,
       })
         .then(() => {
-          console.log("Updated successfully");
+          setPhone("");
         })
         .catch((err) => console.error("something happened:", err));
     }
@@ -82,7 +79,7 @@ function Edit({ user }) {
         bio,
       })
         .then(() => {
-          console.log("Updated successfully");
+          setBio("");
         })
         .catch((err) => console.error("something happened:", err));
     }
@@ -91,7 +88,7 @@ function Edit({ user }) {
     if (email) {
       updateEmail(auth.currentUser, email)
         .then(() => {
-          console.log("Email updated successfully");
+          setEmail("");
         })
         .catch((err) => console.error("Opps something wrong!", err));
     }
@@ -100,7 +97,7 @@ function Edit({ user }) {
     if (password) {
       updatePassword(auth.currentUser, password)
         .then(() => {
-          console.log("password was successfully updated");
+          setPassword("");
         })
         .catch((err) => console.error("could not update password:", err));
     }
@@ -141,7 +138,7 @@ function Edit({ user }) {
               <div className="">
                 <div className="flex items-center space-x-4">
                   <img
-                    src={""}
+                    src={profile.photoUrl}
                     className="h-14 w-14 rounded-md relative hover:cursor-pointer bg-[rgba(0,0,0,0.4)]"
                   />
                   <img
