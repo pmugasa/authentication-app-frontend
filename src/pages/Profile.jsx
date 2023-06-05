@@ -1,7 +1,23 @@
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-
-function Profile({ user }) {
-  if (!user) {
+import { ProfileContext } from "../contexts/ProfileContext";
+import { UserContext } from "../contexts/UserContext";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../services/firebase";
+function Profile() {
+  const { profile, setProfile } = useContext(ProfileContext);
+  const { currentUser } = useContext(UserContext);
+  //fetching user data from the db
+  useEffect(() => {
+    if (currentUser) {
+      const uid = currentUser.uid;
+      const unsub = onSnapshot(doc(db, "users", uid), (doc) => {
+        const data = doc.data();
+        setProfile(data);
+      });
+    }
+  }, [currentUser]);
+  if (!profile) {
     return <div>fetching user data....</div>;
   } else {
     return (
@@ -35,26 +51,26 @@ function Profile({ user }) {
                     <td className="text-[#BDBDBD] text-sm px-2 py-4 ">PHOTO</td>
                     <td className="py-4 px-2">
                       <img
-                        src={user.photoUrl}
+                        src={profile.photoUrl}
                         className="w-10 h-10 rounded-md "
                       />
                     </td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0] ">
                     <td className="text-[#BDBDBD] text-sm py-4 px-2">NAME</td>
-                    <td className="py-4 px-2 text-sm">{user.name}</td>
+                    <td className="py-4 px-2 text-sm">{profile.name}</td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0]">
                     <td className="text-[#BDBDBD] text-sm py-4 px-2">BIO</td>
-                    <td className="py-4 px-2 text-sm">{user.bio}</td>
+                    <td className="py-4 px-2 text-sm">{profile.bio}</td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0]">
                     <td className="text-[#BDBDBD] text-sm py-4 px-2">PHONE</td>
-                    <td className="py-4 px-2 text-sm">{user.phone}</td>
+                    <td className="py-4 px-2 text-sm">{profile.phone}</td>
                   </tr>
                   <tr className="border-b border-[#E0E0E0]">
                     <td className="text-[#BDBDBD] text-sm py-2 px-2">EMAIL</td>
-                    <td className="py-4 px-2 text-sm">{user.email}</td>
+                    <td className="py-4 px-2 text-sm">{profile.email}</td>
                   </tr>
                   <tr className="">
                     <td className="text-[#BDBDBD] text-sm py-2 px-2">

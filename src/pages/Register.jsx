@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 import { auth } from "../services/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const [isDisabled, setIsDisabled] = useState(false);
+  const setCurrentUser = useContext(UserContext);
   //handling errors
   useEffect(() => {
     if (error) {
@@ -22,23 +25,27 @@ function Register() {
     }
   }, [error]);
   // registering user with email & password
-  function registerUser(e) {
+  const registerUser = (e) => {
     e.preventDefault();
+    setIsDisabled(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
-
-        console.log("user created:", user);
+        //setCurrentUser(user);
+        setIsDisabled(false);
       })
-      .catch((err) => console.error(err));
-  }
+      .catch((err) => setError(err.message));
+  };
 
   //sign up user with google
   const registerWithGoogle = () => {
+    setIsDisabled(true);
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then((res) => {
-        console.log("signed in user with google", res.user);
+        const user = res.user;
+        //setCurrentUser(user);
+        setIsDisabled(false);
       })
       .catch((err) => setError(err.message));
   };
@@ -85,6 +92,7 @@ function Register() {
                 />
               </div>
               <button
+                disabled={isDisabled}
                 type="submit"
                 className="mt-4 w-[344px] h-10 rounded-md text-white font-semibold  bg-dark-blue hover:bg-light-blue"
               >
@@ -92,19 +100,16 @@ function Register() {
               </button>
             </div>
           </form>
-          <p className=" mt-4 text-center font-normal text-[14px] text-[#828282]">
-            or continue with these social profile
+          <p className=" my-4 text-center font-normal text-[14px] text-[#828282]">
+            OR
           </p>
-          <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img
-              onClick={registerWithGoogle}
-              src="/Google.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
-            <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
-            <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
-            <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />
-          </div>
+          <button
+            onClick={registerWithGoogle}
+            type="button"
+            className=" w-[344px] h-10 rounded-md  text-[#828282] border border-[#828282] font-semibold "
+          >
+            Register with Google
+          </button>
           <p className=" mt-6 text-center font-normal text-[14px] text-[#828282]">
             Already a member?
             <span className="text-dark-blue hover:underline ml-2">

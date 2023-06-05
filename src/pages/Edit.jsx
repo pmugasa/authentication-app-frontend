@@ -4,8 +4,11 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { updateEmail, updatePassword } from "firebase/auth";
 import { auth } from "../services/firebase";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
+import { ProfileContext } from "../contexts/ProfileContext";
 
-function Edit({ user, profile }) {
+function Edit() {
   const [photoUrl, setPhotoUrl] = useState("");
   const [showInput, setShowInput] = useState(false);
   const [name, setName] = useState("");
@@ -13,10 +16,12 @@ function Edit({ user, profile }) {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
   const [error, setError] = useState("");
-
+  const { currentUser } = useContext(UserContext);
+  const { profile } = useContext(ProfileContext);
   //handling errors
   useEffect(() => {
     if (error) {
@@ -36,10 +41,10 @@ function Edit({ user, profile }) {
   };
 
   //update user details
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     //user document
-    const docRef = doc(db, "users", user.uid);
+    const docRef = doc(db, "users", currentUser.uid);
 
     //updating user name or photo
     if (name) {
@@ -103,7 +108,7 @@ function Edit({ user, profile }) {
     }
     alert("Successfully updated profile ✅");
     navigate(-1);
-  }
+  };
 
   return (
     <>

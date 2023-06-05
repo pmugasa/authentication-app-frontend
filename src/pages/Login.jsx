@@ -6,11 +6,15 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
-function Login({ setErr, err }) {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { setCurrentUser } = useContext(UserContext);
+  const [isDisabled, setIsDisabled] = useState(false);
   //handling errors
   useEffect(() => {
     if (error) {
@@ -25,26 +29,33 @@ function Login({ setErr, err }) {
   }, [error]);
 
   //login user with email
-  async function handleLogin(e) {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-
-        console.log("user logged in:", user);
-      })
-      .catch((err) => setError(err.message));
-  }
+    setIsDisabled(true);
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      const user = response.user;
+      //setCurrentUser(user);
+      setIsDisabled(false);
+    } catch (error) {
+      setError(error.message);
+      setIsDisabled(false);
+    }
+  };
 
   //login user with google
-  const loginWithGoogle = () => {
+  const loginWithGoogle = async () => {
+    setIsDisabled(true);
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((res) => {
-        console.log("signed in user with google", res.user);
-      })
-      .catch((err) => setError(err.message));
+    try {
+      const response = await signInWithPopup(auth, provider);
+      const user = response.user;
+      // setCurrentUser(user);
+      setIsDisabled(false);
+    } catch (error) {
+      setError(error.message);
+      setIsDisabled(false);
+    }
   };
 
   return (
@@ -52,7 +63,7 @@ function Login({ setErr, err }) {
       <div className="w-full h-full flex items-center justify-center">
         <div className="px-8 border border-[#BDBDBD] w-[400px] h-[480px] my-10 rounded-md">
           <form className="m-auto" onSubmit={handleLogin}>
-            <div className="w-[344px] mx-auto my-10">
+            <div className="w-[344px] mx-auto my-4">
               <h3 className="my-4 font-bold text-lg text-dark-gray">Login</h3>
               {error && (
                 <p className="text-red-500 font-medium text-sm text-center">
@@ -69,7 +80,7 @@ function Login({ setErr, err }) {
                   className="outline-none focus:outline-none w-full h-full ml-2 placeholder:text-[16px] placeholder:font-normal placeholder:text-[#828282] "
                 />
               </div>
-              <div className="mt-4 flex items-center  h-10 w-[344px] p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
+              <div className="my-4 flex items-center  h-10 w-[344px] p-2 rounded-md border border-[#BDBDBD] focus:border-dark-blue">
                 <img src="lock.svg" className="h-5 w-5" />
                 <input
                   type="password"
@@ -81,25 +92,26 @@ function Login({ setErr, err }) {
               </div>
               <button
                 type="submit"
-                className="mt-4 w-[344px] h-10 rounded-md text-white font-semibold  bg-dark-blue hover:bg-light-blue"
+                disabled={isDisabled}
+                className=" w-[344px] h-10 rounded-md text-white font-semibold  bg-dark-blue hover:bg-light-blue"
               >
                 Login
               </button>
             </div>
           </form>
-          <p className=" mt-8 text-center font-normal text-[14px] text-[#828282]">
-            or continue with these social profile
+          <p className="my-2 text-center font-normal text-[14px] text-[#828282]">
+            OR
           </p>
-          <div className="mt-4 flex items-center justify-center space-x-4 ">
-            <img
-              onClick={loginWithGoogle}
-              src="/Google.svg"
-              className="w-10 h-10 cursor-pointer"
-            />
-            <img src="/Facebook.svg" className="w-10 h-10 cursor-pointer" />
-            <img src="/Twitter.svg" className="w-10 h-10 cursor-pointer" />
-            <img src="/Github.svg" className="w-10 h-10 cursor-pointer" />
-          </div>
+
+          <button
+            onClick={loginWithGoogle}
+            disabled={isDisabled}
+            type="button"
+            className=" w-[344px] h-10 rounded-md  text-[#828282] border border-[#828282] font-semibold"
+          >
+            Login with Google
+          </button>
+
           <p className=" mt-8 text-center font-normal text-[14px] text-[#828282]">
             Don't have an account yet?
             <span className="text-dark-blue hover:underline ml-2">

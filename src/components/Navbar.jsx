@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import { useState } from "react";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
+import { ProfileContext } from "../contexts/ProfileContext";
 
-function Navbar({ user, profile, setCurrentUser }) {
+function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const { currentUser } = useContext(UserContext);
+  const { profile } = useContext(ProfileContext);
 
   return (
     <>
@@ -12,15 +17,11 @@ function Navbar({ user, profile, setCurrentUser }) {
           <img src="/devchallenges.svg" />
         </Link>
 
-        {user === null ? null : (
+        {currentUser && (
           <div className="ml-auto flex items-center space-x-2 ">
             <img
               onClick={() => setShowDropdown(!showDropdown)}
-              src={
-                profile.photoUrl
-                  ? profile.photoUrl
-                  : "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80"
-              }
+              src={profile.photoUrl}
               className="w-8 h-8 rounded-md hover:cursor-pointer"
             />
             <div
@@ -42,7 +43,7 @@ function Navbar({ user, profile, setCurrentUser }) {
           className="absolute z-30 right-2 sm:top-16 sm:right-16 md:right-20 lg:right-36 bg-[#fafafb]"
           onMouseLeave={() => setShowDropdown(false)}
         >
-          <Dropdown setCurrentUser={setCurrentUser} />
+          <Dropdown />
         </div>
       )}
     </>

@@ -1,17 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../services/firebase";
 import { signOut } from "firebase/auth";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
+import { ProfileContext } from "../contexts/ProfileContext";
 
-function Dropdown({ setCurrentUser }) {
+function Dropdown() {
+  const { setCurrentUser } = useContext(UserContext);
+  const { setProfile } = useContext(ProfileContext);
   const navigate = useNavigate();
   //logout user
   const handleSignout = () => {
     signOut(auth)
       .then(() => {
         setCurrentUser(null);
+        setProfile(null);
         navigate("/login");
       })
-      .catch((err) => console.error("error signing  out user", err));
+      .catch((err) => alert(err.message));
   };
   return (
     <ul className="text-xs text-dark-gray font-medium shadow-lg h-42 w-48 border border-very-light-gray rounded-lg px-4 py-2">
