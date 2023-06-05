@@ -1,22 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ProfileContext } from "../contexts/ProfileContext";
-import { UserContext } from "../contexts/UserContext";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase";
+
 function Profile() {
-  const { profile, setProfile } = useContext(ProfileContext);
-  const { currentUser } = useContext(UserContext);
-  //fetching user data from the db
-  useEffect(() => {
-    if (currentUser) {
-      const uid = currentUser.uid;
-      const unsub = onSnapshot(doc(db, "users", uid), (doc) => {
-        const data = doc.data();
-        setProfile(data);
-      });
-    }
-  }, [currentUser]);
+  const { profile } = useContext(ProfileContext);
+
   if (!profile) {
     return <div>fetching user data....</div>;
   } else {

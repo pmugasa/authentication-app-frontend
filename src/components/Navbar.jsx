@@ -9,7 +9,7 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const { currentUser } = useContext(UserContext);
   const { profile } = useContext(ProfileContext);
-
+  console.log("profile from navbar", profile);
   return (
     <>
       <nav className="w-full py-4 px-2 flex items-center justify-start relative">
@@ -17,7 +17,7 @@ function Navbar() {
           <img src="/devchallenges.svg" />
         </Link>
 
-        {currentUser && (
+        {profile && (
           <div className="ml-auto flex items-center space-x-2 ">
             <img
               onClick={() => setShowDropdown(!showDropdown)}

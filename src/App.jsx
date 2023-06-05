@@ -4,6 +4,8 @@ import { auth } from "./services/firebase";
 import { UserContext } from "./contexts/UserContext";
 import { ProfileContext } from "./contexts/ProfileContext";
 import { onAuthStateChanged } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "./services/firebase";
 //components
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
@@ -31,6 +33,17 @@ function App() {
     return () => unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  //fetching user data from the db
+  useEffect(() => {
+    if (currentUser) {
+      const uid = currentUser.uid;
+      const unsub = onSnapshot(doc(db, "users", uid), (doc) => {
+        const data = doc.data();
+        setProfile(data);
+      });
+    }
+  }, [currentUser]);
 
   //console.log("current user frm app", currentUser.uid);
   return (
